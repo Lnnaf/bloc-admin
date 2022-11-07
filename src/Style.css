@@ -1,0 +1,14 @@
+.buttonAct{
+    margin-left: 1rem;
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+.modal-90w {
+  width: 70vw  !important ; /* Occupy the 90% of the screen width */
+  max-width: 70vw  !important;
+}
