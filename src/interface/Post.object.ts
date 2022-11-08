@@ -10,5 +10,6 @@ export interface Post {
     lastModifier: Date
     createdDate: Date,
     postRead: string,
-    relativeTime?: string
+    relativeTime?: string,
+    content : string 
 }

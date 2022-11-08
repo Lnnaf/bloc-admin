@@ -11,6 +11,15 @@ export default class PostService {
     return axios.put("http://localhost:8080/api/v1/post/update", post).then((res) => res.data);
   }
 
+  createPost(post: any): Promise<Post[]> {
+    return axios.post("http://localhost:8080/api/v1/post/create", post).then((res) => res.data);
+  }
+
+  deletePost(id: any): Promise<Post[]> {
+    return axios.delete(`http://localhost:8080/api/v1/post/delete/${id}`).then((res) => res.data);
+  }
+
+
   prepareDataForTable(posts: Post[]):any[]{
     
     const timeHelper = new TimeHelper();
@@ -19,7 +28,7 @@ export default class PostService {
         id: item.id,
         title: item.title,
         description: item.description,
-        createdDate: timeHelper.convertHumanTime(item.createdDate),
+        createdDate: item.createdDate != null ? timeHelper.convertHumanTime(item.createdDate): "",
         lastModifier: item.lastModifier != null ? timeHelper.convertHumanTime(item.lastModifier) :"",
         author: item.author.displayName
       }

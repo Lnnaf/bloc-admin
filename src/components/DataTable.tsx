@@ -4,6 +4,7 @@ import { FunctionComponent } from "react";
 import { Post } from "../interface/Post.object";
 
 import "./Table.css"
+import SpinnerLoading from "./spinner/SpinnerLoading";
 interface DataTableProps {
     datas: Post[]
     columnsDefine: any[]
@@ -12,8 +13,8 @@ interface DataTableProps {
 const DataTable: FunctionComponent<DataTableProps> = (props) => {
     const [data, setData] = useState<Post[]>([])
 
-    
-    useEffect(() =>{
+
+    useEffect(() => {
         setData(props.datas)
     })
 
@@ -27,40 +28,42 @@ const DataTable: FunctionComponent<DataTableProps> = (props) => {
         prepareRow,
     } = useTable({ columns, data })
     return (
-        <table {...getTableProps()} className="table table-hover">
-            <thead>
-                {headerGroups.map(headerGroup => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map(column => (
-                            <th
-                                {...column.getHeaderProps()}
-                            >
-                                {column.render('Header')}
-                                
-                            </th>
-                        ))}
-                    </tr>
-                ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-                {rows.map(row => {
-                    prepareRow(row)
-                    return (
-                        <tr {...row.getRowProps()}>
-                            {row.cells.map(cell => {
-                                return (
-                                    <td
-                                        {...cell.getCellProps()}
-                                    >
-                                        {cell.render('Cell')}
-                                    </td>
-                                )
-                            })}
+        <>
+            <table {...getTableProps()} className="table table-hover">
+                <thead>
+                    {headerGroups.map(headerGroup => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map(column => (
+                                <th
+                                    {...column.getHeaderProps()}
+                                >
+                                    {column.render('Header')}
+
+                                </th>
+                            ))}
                         </tr>
-                    )
-                })}
-            </tbody>
-        </table>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map(row => {
+                        prepareRow(row)
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map(cell => {
+                                    return (
+                                        <td
+                                            {...cell.getCellProps()}
+                                        >
+                                            {cell.render('Cell')}
+                                        </td>
+                                    )
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+        </>
     );
 }
 

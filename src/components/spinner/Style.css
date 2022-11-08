@@ -1,0 +1,24 @@
+.spinner-loading-container {
+  /* From https://css.glass */
+  color:#0061f2;
+  background: rgba(172, 162, 158, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.center-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.hide{
+    visibility: hidden;
+}
