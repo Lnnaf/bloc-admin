@@ -75,6 +75,7 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
 
     useEffect(() => {
         fetchPostsData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const showModal = () => setShow(true)

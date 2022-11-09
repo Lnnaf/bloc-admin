@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { Post } from "../interface/Post.object";
 
 import "./Table.css"
-import SpinnerLoading from "./spinner/SpinnerLoading";
+
 interface DataTableProps {
     datas: Post[]
     columnsDefine: any[]
@@ -16,9 +16,11 @@ const DataTable: FunctionComponent<DataTableProps> = (props) => {
 
     useEffect(() => {
         setData(props.datas)
-    })
+        // eslint-disable-next-line
+    }, [])
 
-    const columns = React.useMemo(() => props.columnsDefine, [])
+    // eslint-disable-next-line
+    const columns = React.useMemo(() => props.columnsDefine, []) 
 
     const {
         getTableProps,

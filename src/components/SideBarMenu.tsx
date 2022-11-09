@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-interface SideBarMenuProps { }
-
 interface SidBarMenuProps { }
 
 const SidBarMenu: FunctionComponent<SidBarMenuProps> = () => {
