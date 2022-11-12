@@ -6,18 +6,18 @@ import { Post } from "../interface/Post.object";
 import "./Table.css"
 
 interface DataTableProps {
-    datas: Post[]
+    datas: any[]
     columnsDefine: any[]
 }
 
 const DataTable: FunctionComponent<DataTableProps> = (props) => {
-    const [data, setData] = useState<Post[]>([])
+    const [data, setData] = useState<any[]>([])
 
 
     useEffect(() => {
         setData(props.datas)
         // eslint-disable-next-line
-    }, [])
+    })
 
     // eslint-disable-next-line
     const columns = React.useMemo(() => props.columnsDefine, []) 

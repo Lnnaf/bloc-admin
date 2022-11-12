@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useRef, useState } from "react";
 import { faFileLines, faEdit, faTrash, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,12 +7,17 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import HeaderContent from "../components/HeaderContent";
 import { Post } from "../interface/Post.object";
+import { User } from "../interface/User.object";
 import PostService from "../services/PostService";
 import { TimeHelper } from "../helper/TimeHelper";
 import DataTable from "../components/DataTable";
+import SpinnerLoading from "../components/spinner/SpinnerLoading";
 
 import 'react-toastify/dist/ReactToastify.css';
-import SpinnerLoading from "../components/spinner/SpinnerLoading";
+import TinyMce from "../components/editor/Tiny.mce";
+
+
+
 
 
 interface ListsPostPageProps {
@@ -22,18 +27,19 @@ interface ListsPostPageProps {
 
 
 const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
-    const [posts, setPosts] = React.useState<Post[]>([])
-    const [show, setShow] = React.useState<boolean>()
-    const [formValue, setFormValue] = React.useState<Post>({} as Post)
-    const [isEdit, setIsEdit] = React.useState<boolean>(false)
-    const [isLoading, setIsLoading] = React.useState<boolean>(false)
-    const [isDelete, setIsDelete] = React.useState<boolean>(false)
+    const [tablePostDatas, setTablePostDatas] = useState<any[]>([])
+    const [content, setContent] = useState<string>('')
+    const [show, setShow] = useState<boolean>()
+    const [formValue, setFormValue] = useState<Post>({} as Post)
+    const [isEdit, setIsEdit] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isDelete, setIsDelete] = useState<boolean>(false)
 
     const services = {
         postService: new PostService(),
         timeHelper: new TimeHelper()
     }
-
+    const editorRef = useRef({});
     const columnsDefined = [{
         Header: 'ID',
         accessor: 'id',
@@ -85,7 +91,8 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
 
     const onEdit = (value: any) => () => {
         setIsEdit(true)
-        setFormValue(value)
+        setContent(value.content)
+        setFormValue(value) 
         showModal()
     }
 
@@ -97,72 +104,62 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
 
     const onAdd = () => {
         setFormValue({} as Post)
+        setContent('')
         setIsEdit(false)
         showModal()
     }
 
     const onSubmit = (e: any) => {
         e.preventDefault();
+        const author: User = { id: 1 };
+        const postNeedUpdate: Post = formValue
+        postNeedUpdate.author = author
         if (isEdit) {
-            const postNeedUpdate = {
-                id: formValue.id,
-                urlTitle: "",
-                author: {
-                    id: formValue.author.id
-                },
-                imageUrl: formValue.imageUrl,
-                postRead: formValue.postRead,
-                title: e.target[0].value,
-                description: e.target[1].value,
-                content: e.target[2].value,
-            }
             updatePost(postNeedUpdate)
         } else {
-            const postCreating = {
-                urlTitle: "",
-                author: {
-                    id: 1
-                },
-                imageUrl: '',
-                postRead: '',
-                title: e.target[0].value,
-                description: e.target[1].value,
-                content: e.target[2].value
-            }
-            addPost(postCreating)
+            postNeedUpdate.urlTitle = "zzz"
+            addPost(postNeedUpdate)
         }
     }
 
-    const updatePost = (postSubmitObj: any) => {
+    const updatePost = (postSubmitObj: Post) => {
         const update = services.postService.updatePost(postSubmitObj).then(() => updateTable())
         triggerToastPromise(update, 'Updating')
     }
 
-    const addPost = (postSubmitObj: any) => {
+    const addPost = (postSubmitObj: Post) => {
         const create = services.postService.createPost(postSubmitObj).then(() => updateTable())
         triggerToastPromise(create, 'Creating')
     }
 
     const confrimDeletePost = () => {
-        const deletePromise = services.postService.deletePost(formValue.id).then(() => {updateTable()})
+        const deletePromise = services.postService.deletePost(formValue.id)
+            .then(() => { updateTable() })
         triggerToastPromise(deletePromise, 'Deleting')
+        closeDeleteModal()
     }
 
     const triggerToastPromise = (promiseFunc: any, action: string) => {
         toast.promise(promiseFunc, {
             pending: `${action} ...please wait ...`,
             success: `${action} success`,
-            error: "Something went wrong 🤯 "
+            error: {
+                render({ data }) {
+                    // When the promise reject, data will contains the error
+                    return `${data} 🤯`
+                }
+            }
         });
     }
 
     const fetchPostsData = () => {
         setIsLoading(true)
         services.postService.getAll().then((res) => {
-            setPosts(services.postService.prepareDataForTable(res))
+            setTablePostDatas(services.postService.prepareDataForTable(res))
             setIsLoading(false)
+
         }).catch((err) => {
-            toast.error("Something went wrong 🤯, data not loading")
+            toast.error(`Something went wrong 🤯, err: ${err}`)
             setIsLoading(false)
         })
     }
@@ -171,6 +168,25 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
         closeModal()
         closeDeleteModal()
     }
+
+    const handleChange = (event: any) => {
+        const target = event.target
+        const value = target.value
+        const name = target.name
+
+        setFormValue({
+            ...formValue,
+            [name]: value
+        })
+    }
+
+    const onChangeContentStage = (newContentState:string) => {
+        setContent(newContentState);
+        setFormValue({
+            ...formValue,
+            content: newContentState
+        })
+    };
 
     return (
         <>
@@ -192,7 +208,7 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
                                 </Row>
                             </div>
                             <div className="card-body">
-                                <DataTable datas={posts} columnsDefine={columnsDefined} />
+                                <DataTable datas={tablePostDatas} columnsDefine={columnsDefined} />
                             </div>
                         </div>
                     </div>
@@ -200,8 +216,9 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
             </div>
             {/* Modal area */}
             <Modal
-
-                aria-labelledby="contained-modal-title-vcenter"
+                scrollable = {true}
+                enforceFocus={false}
+                aria-labelledby="contained-`modal`-title-vcenter"
                 centered
                 show={show}
                 onHide={closeModal}
@@ -213,13 +230,15 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
                     <Modal.Title>{(isEdit ? "Edit post" : "Add new post")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={onSubmit} id="postForm">
+                    <Form onSubmit={onSubmit} id="postForm" >
                         <Form.Group className="mb-3" controlId="postForm.title">
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type="text"
+                                name="title"
                                 placeholder="title .."
-                                defaultValue={formValue.title}
+                                value={formValue.title || ""}
+                                onChange={handleChange}
                                 autoFocus
                             />
                         </Form.Group>
@@ -227,9 +246,22 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
                             <Form.Label>Description</Form.Label>
                             <Form.Control
                                 type="text"
+                                name="description"
                                 placeholder="Description .."
                                 autoFocus
-                                defaultValue={formValue.description}
+                                value={formValue.description || ""}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="postForm.thumbnailUrl">
+                            <Form.Label>Tumbnail image url</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="thumbnailUrl"
+                                placeholder="Thumbnail image url .."
+                                autoFocus
+                                value={formValue.thumbnailUrl || ""}
+                                onChange={handleChange}
                             />
                         </Form.Group>
                         <Form.Group
@@ -237,7 +269,7 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
                             controlId="exampleForm.content"
                         >
                             <Form.Label>Content</Form.Label>
-                            <Form.Control as="textarea" rows={15} defaultValue={formValue.content} />
+                            <TinyMce initialValue={content} handleEditorChange={onChangeContentStage} />
                         </Form.Group>
                     </Form>
                 </Modal.Body>
@@ -250,17 +282,17 @@ const ListsPostPage: FunctionComponent<ListsPostPageProps> = () => {
             </Modal>
 
             {/* Modal confirm delete area */}
-            <Modal show={isDelete} onHide={closeDeleteModal}>
+            <Modal show={isDelete} onHide={closeDeleteModal} enforceFocus ={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete Post</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Wow, you're deleting post ID <b style={{color:"red"}}>{formValue.id}</b>, are you sure for that? This action can't reverse</Modal.Body>
+                <Modal.Body>Wow, you're deleting post ID <b style={{ color: "red" }}>{formValue.id}</b>, are you sure for that? This action can't reverse</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={closeDeleteModal}>
                         Close
                     </Button>
                     <Button variant="primary" onClick={confrimDeletePost}>
-                       I confirm
+                        I confirm
                     </Button>
                 </Modal.Footer>
             </Modal>

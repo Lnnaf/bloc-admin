@@ -4,7 +4,7 @@ export class TimeHelper {
     return moment(createdDate).fromNow();
   }
 
-  convertHumanTime(createdDate: Date): string {
+  convertHumanTime(createdDate: Date | string): string {
     return moment(createdDate).format("DD-MM-yyyy HH:mm:ss");
   }
 }

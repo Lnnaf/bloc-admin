@@ -1,4 +1,5 @@
 import axios from "axios";
+import moment from "moment";
 import { TimeHelper } from "../helper/TimeHelper";
 import { Post } from "../interface/Post.object";
 
@@ -16,23 +17,29 @@ export default class PostService {
   }
 
   deletePost(id: any): Promise<Post[]> {
-    return axios.delete(`http://localhost:8080/api/v1/post/delete/${id}`).then((res) => res.data);
+    return axios.delete(`http://localhost:8080/api/v1/post/delete/${id}`)
+      .then((res) => res.data)
+      .catch((err) => {
+       console.log(err);
+       
+      });
   }
 
 
-  prepareDataForTable(posts: Post[]):any[]{
-    
+  prepareDataForTable(posts: Post[]): any[] {
     const timeHelper = new TimeHelper();
-    return posts.map((item) =>{
+
+    return posts.map((item) => {
       return {
         id: item.id,
         title: item.title,
         description: item.description,
-        createdDate: item.createdDate != null ? timeHelper.convertHumanTime(item.createdDate): "",
-        lastModifier: item.lastModifier != null ? timeHelper.convertHumanTime(item.lastModifier) :"",
-        author: item.author.displayName
+        createdDate: item.createdDate != null ? timeHelper.convertHumanTime(item.createdDate) : "",
+        lastModifier: item.lastModifier != null ? timeHelper.convertHumanTime(item.lastModifier) : "",
+        author: item.author != null ? item.author.displayName : "",
+        content: item.content,
       }
     });
-     
+
   }
 }
