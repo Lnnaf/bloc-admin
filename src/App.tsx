@@ -8,6 +8,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './layouts/Home';
 import ListsPostPage from './layouts/ListsPostPage';
 import { Helmet } from "react-helmet";
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   useEffect(() => {
@@ -26,6 +27,7 @@ function App() {
       <Helmet>
         <script src="https://unpkg.com/prismjs@1.29.0/prism.js" />
       </Helmet>
+      <ToastContainer />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import moment from "moment";
+
 import { TimeHelper } from "../helper/TimeHelper";
 import { Post } from "../interface/Post.object";
 
@@ -26,18 +26,18 @@ export default class PostService {
   }
 
 
-  prepareDataForTable(posts: Post[]): any[] {
-    const timeHelper = new TimeHelper();
-
+  convert(posts: Post[]): any[] {
     return posts.map((item) => {
       return {
         id: item.id,
         title: item.title,
         description: item.description,
-        createdDate: item.createdDate != null ? timeHelper.convertHumanTime(item.createdDate) : "",
-        lastModifier: item.lastModifier != null ? timeHelper.convertHumanTime(item.lastModifier) : "",
+        createdDate: item.createdDate,
+        lastModifier: item.lastModifier,
         author: item.author != null ? item.author.displayName : "",
+        thumbnailUrl: item.thumbnailUrl || "",
         content: item.content,
+        tags: item.tags
       }
     });
 

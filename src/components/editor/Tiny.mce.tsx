@@ -1,9 +1,9 @@
 import { FunctionComponent, useEffect, useRef, useState } from "react";
-import { Editor, IAllProps } from '@tinymce/tinymce-react';
-import tinymce from 'tinymce';
+import { Editor } from '@tinymce/tinymce-react';
 interface TinyMceProps {
     initialValue: string
     handleEditorChange: Function
+    
 }
 
 const TinyMce: FunctionComponent<TinyMceProps> = (props, prevProps) => {
@@ -70,12 +70,12 @@ const TinyMce: FunctionComponent<TinyMceProps> = (props, prevProps) => {
                     'lists',
                     'link',
                     'image',
-                    'paste',
+                    'preview',
                     'help',
                     'wordcount',
                     'codesample',
                 ],
-                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | help | codesample image',
+                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | help | codesample image preview',
                 a11y_advanced_options: true,
                 file_picker_types: 'file image media',
                 file_picker_callback: imageCallBack

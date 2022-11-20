@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.action-btn {
+  background-color: #ffffff !important;
+    background-repeat: no-repeat !important;
+    border: none !important;
+    cursor: pointer !important;
+    overflow: hidden !important;
+    outline: none !important;
+    color: black !important;
+}
